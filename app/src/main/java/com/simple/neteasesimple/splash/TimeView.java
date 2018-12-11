@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -46,7 +45,7 @@ public class TimeView extends View {
         mTextPaint = new TextPaint();
         //抗锯齿
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(20);
+        mTextPaint.setTextSize(50);
         mTextPaint.setColor(Color.WHITE);
 
         //内圈画笔
@@ -101,8 +100,6 @@ public class TimeView extends View {
         float y = (canvas.getHeight()/2);
         float de = mTextPaint.descent();//+
         float a = mTextPaint.ascent();//-
-
-        Log.i("caiiiac","de = "+de +" a = "+a);
 
         //x 左边距
         //y 顶部到baseLine的距离

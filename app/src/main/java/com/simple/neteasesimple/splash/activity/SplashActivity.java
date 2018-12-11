@@ -76,13 +76,12 @@ public class SplashActivity extends BaseActivity {
 //        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVe);
 
 
+        // 请求权限
         PermisionUtil.verifyStoragePermissions(this);
+
         initView();
-
-
-//        showImage();
-
-        httpRequest();
+        getAds();
+        showImage();
 
     }
 
@@ -250,9 +249,25 @@ public class SplashActivity extends BaseActivity {
             }
 
             @Override
-            public void onSuccess(String ads) {
-                Log.i("caiiiac","onSuccess"+ads.toString());
+            public void onSuccess(String json) {
+                Ads ads = JsonUtil.parseJson(json, Ads.class);
 
+                if (null != ads) {
+                    //请求成功
+                    Log.i("it520", ads.toString());
+
+                    //http成功后,缓存json
+                    SharePrenceUtil.saveString(SplashActivity.this, JSON_CACHE, json);
+                    //http成功后,缓存超时时间
+                    SharePrenceUtil.saveInt(SplashActivity.this, JSON_CACHE_TIME_OUT, ads.getNext_req());
+                    //http成功后,缓存上次请求成功的时间
+                    SharePrenceUtil.saveLong(SplashActivity.this, JSON_CACHE_LAST_SUCCESS, System.currentTimeMillis());
+
+                    Intent intent = new Intent();
+                    intent.setClass(SplashActivity.this, DownloadImageService.class);
+                    intent.putExtra(DownloadImageService.ADS_DATE, ads);
+                    startService(intent);
+                }
             }
         });
     }
@@ -269,7 +284,6 @@ public class SplashActivity extends BaseActivity {
 
         public MyHanlder(SplashActivity act) {
             this.activity = new WeakReference<SplashActivity>(act);
-
         }
 
         @Override
@@ -290,12 +304,8 @@ public class SplashActivity extends BaseActivity {
                         this.removeCallbacks(act.reshRing);
                         act.gotoMain();
                     }
-                    Log.i("caiiiac", "handleMessage");
                     break;
-
             }
-
         }
     }
-
 }

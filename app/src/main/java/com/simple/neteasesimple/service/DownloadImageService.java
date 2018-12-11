@@ -83,7 +83,7 @@ public class DownloadImageService extends IntentService {
             File cacheFile = new File(SD, Constant.CACHE);
 
             if(!cacheFile.exists()){
-                cacheFile.mkdirs();
+                boolean isc = cacheFile.mkdirs();
             }
 
             File image = new File(cacheFile,MD5_name+".jpg");
