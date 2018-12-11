@@ -243,7 +243,7 @@ public class SplashActivity extends BaseActivity {
 
     public void httpRequest(){
         HttpUtil util = HttpUtil.getInstance();
-        util.getDate(Constant.SPLASH_URL, new HttpRespon(String.class) {
+        util.getDate(Constant.SPLASH_URL, new HttpRespon<String>(String.class) {
             @Override
             public void onError(String msg) {
                 Log.i("caiiiac","error msg"+msg);
