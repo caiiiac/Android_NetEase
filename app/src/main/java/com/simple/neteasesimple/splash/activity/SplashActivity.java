@@ -1,6 +1,7 @@
 package com.simple.neteasesimple.splash.activity;
 
 
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,83 +17,104 @@ import android.widget.ImageView;
 import com.simple.neteasesimple.MainActivity;
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.service.DownloadImageService;
+import com.simple.neteasesimple.splash.OnTimeClickListener;
+import com.simple.neteasesimple.splash.TimeView;
 import com.simple.neteasesimple.splash.bean.Action;
 import com.simple.neteasesimple.splash.bean.Ads;
 import com.simple.neteasesimple.splash.bean.AdsDetail;
 import com.simple.neteasesimple.until.BaseActivity;
 import com.simple.neteasesimple.until.Constant;
+import com.simple.neteasesimple.until.HttpRespon;
+import com.simple.neteasesimple.until.HttpUtil;
 import com.simple.neteasesimple.until.ImageUtil;
 import com.simple.neteasesimple.until.JsonUtil;
 import com.simple.neteasesimple.until.Md5Helper;
+import com.simple.neteasesimple.until.PermisionUtil;
 import com.simple.neteasesimple.until.SharePrenceUtil;
+
 
 import org.xutils.view.annotation.ContentView;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 
 @ContentView(R.layout.activity_splash)
 public class SplashActivity extends BaseActivity {
     //广告图片
-    ImageView ads_img ;
+    ImageView ads_img;
+    //倒计时
+    TimeView time;
 
     //json 缓存
     static final String JSON_CACHE = "ads_Json";
     static final String JSON_CACHE_TIME_OUT = "ads_Json_time_out";
     static final String JSON_CACHE_LAST_SUCCESS = "ads_Json_last";
-    static final String LAST_IMAGE_INDEX ="img_index";
-    Handler mHandler;
+    static final String LAST_IMAGE_INDEX = "img_index";
 
+    int length = 2 * 1000;
+    int space = 250;
+    int now = 0;
+    int total;
+
+    MyHanlder mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         //7.0~2.0
         //开启全屏的设置
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //4.4 沉浸式
+//        View decorView = getWindow().getDecorView();
+//        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVe);
 
 
-        ads_img = (ImageView) findViewById(R.id.ads);
-        mHandler = new Handler();
+        PermisionUtil.verifyStoragePermissions(this);
+        initView();
 
 
-        getAds();
+//        showImage();
 
-        showImage();
-
+        httpRequest();
 
     }
-//   public void newThread(){
-//       Thread thread = new Thread(){
-//           @Override
-//           public void run() {
-//               super.run();
-//               Looper.prepare();
-//               Handler handler =  new Handler();
-//               Looper.loop();
-//           }
-//       };
-//       thread.start();
-//   }
 
-    Runnable NoPhotoGotoMain  = new Runnable() {
+
+    Runnable NoPhotoGotoMain = new Runnable() {
         @Override
         public void run() {
-            Intent intent = new Intent();
-            intent.setClass(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
+            gotoMain();
         }
     };
 
+    //圆环控件的计时
+    Runnable reshRing = new Runnable() {
+        @Override
+        public void run() {
+//            //重新新建
+//            Message message = new Message();
+            //消息池中复用
+            Message message = mHandler.obtainMessage(0);
+            message.arg1 = now;
+            mHandler.sendMessage(message);
+            mHandler.postDelayed(this, space);
+            now++;
+        }
+    };
+
+    public void gotoMain() {
+        Intent intent = new Intent();
+        intent.setClass(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     protected void onDestroy() {
@@ -100,52 +122,89 @@ public class SplashActivity extends BaseActivity {
 
     }
 
-    public void click(View view){
+    //初始化各个控件
+    public void initView() {
+        ads_img = (ImageView) findViewById(R.id.ads);
+        time = (TimeView) findViewById(R.id.time);
+        time.setVisibility(View.GONE);
+        time.setListener(new OnTimeClickListener() {
+            @Override
+            public void onClickTime(View view) {
+                //直接跳转到MainAcitivy
+                //我们选择跳过按钮后,就应该把定时去除
+                mHandler.removeCallbacks(reshRing);
+                gotoMain();
+
+            }
+        });
+
+        //刷新的次数
+        total = length / space;
+
+        //内存泄漏
+        //Logger->uithread
+
+        mHandler = new MyHanlder(this);
+    }
+
+
+    public void click(View view) {
         mHandler.sendMessage(new Message());
     }
-    public void showImage(){
+
+    public void showImage() {
         //读出缓存
-        String cache =  SharePrenceUtil.getString(this,JSON_CACHE);
-        if(!TextUtils.isEmpty(cache)){
+        String cache = SharePrenceUtil.getString(this, JSON_CACHE);
+        if (!TextUtils.isEmpty(cache)) {
+
+            //只有显示了广告图的情况下才显示倒数控件
+            time.setVisibility(View.VISIBLE);
+            mHandler.post(reshRing);
+
+
             //读出这次显示的图片的角标
-            int index = SharePrenceUtil.getInt(this,LAST_IMAGE_INDEX);
+            int index = SharePrenceUtil.getInt(this, LAST_IMAGE_INDEX);
             //转化成对象
-            Ads ads =  JsonUtil.parseJson(cache, Ads.class);
+            Ads ads = JsonUtil.parseJson(cache, Ads.class);
             int size = ads.getAds().size();
 
-            if(null==ads){
+            if (null == ads) {
                 return;
             }
 
             List<AdsDetail> adsDetails = ads.getAds();
-            if(null!=adsDetails && adsDetails.size()>0){
-                final AdsDetail detail =  adsDetails.get(index%size);
+            if (null != adsDetails && adsDetails.size() > 0) {
+                final AdsDetail detail = adsDetails.get(index % size);
                 List<String> urls = detail.getRes_url();
-                if(urls!=null&&!TextUtils.isEmpty(urls.get(0))){
+                if (urls != null && !TextUtils.isEmpty(urls.get(0))) {
                     //获取到url
                     String url = urls.get(0);
                     //计算出文件名
-                    String image_name =  Md5Helper.toMD5(url);
+                    String image_name = Md5Helper.toMD5(url);
 
                     File image = ImageUtil.getFileByName(image_name);
-                    if(image.exists()){
+                    if (image.exists()) {
                         Bitmap bitmap = ImageUtil.getImageBitMapByFile(image);
                         ads_img.setImageBitmap(bitmap);
                         //指向下一张图片
                         index++;
-                        SharePrenceUtil.saveInt(this,LAST_IMAGE_INDEX,index);
+                        SharePrenceUtil.saveInt(this, LAST_IMAGE_INDEX, index);
 
                         ads_img.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Action action =  detail.getAction_params();
+                                Action action = detail.getAction_params();
                                 //如果h5的数据是空的或者没有广告页面,我们不跳转
-                                if(action!=null&&!TextUtils.isEmpty(action.getLink_url())){
+                                if (action != null && !TextUtils.isEmpty(action.getLink_url())) {
 
                                     Intent intent = new Intent();
-                                    intent.setClass(SplashActivity.this,WebViewActivity.class);
-                                    intent.putExtra(WebViewActivity.ACTION_NAME,action);
+                                    intent.setClass(SplashActivity.this, WebViewActivity.class);
+                                    intent.putExtra(WebViewActivity.ACTION_NAME, action);
                                     startActivity(intent);
+                                    finish();
+                                    //跳转到web广告页面后也要把倒数清空
+                                    mHandler.removeCallbacks(reshRing);
+
 
                                 }
                             }
@@ -153,84 +212,90 @@ public class SplashActivity extends BaseActivity {
                     }
                 }
             }
-        }
-        else{
+        } else {
             //没有缓存,显示不了图片,3秒后跳转到首页
-            mHandler.postDelayed(NoPhotoGotoMain,3000);
+            mHandler.postDelayed(NoPhotoGotoMain, 3000);
         }
-
-
-
 
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mHandler.removeCallbacks(reshRing);
+    }
+
     //判断是否需要http请求
-    public void getAds(){
-        String cache =  SharePrenceUtil.getString(this,JSON_CACHE);
-        if(TextUtils.isEmpty(cache)){
+    public void getAds() {
+        String cache = SharePrenceUtil.getString(this, JSON_CACHE);
+        if (TextUtils.isEmpty(cache)) {
             httpRequest();
-        }else{
-            int time_Out = SharePrenceUtil.getInt(this,JSON_CACHE_TIME_OUT);
-            long now  = System.currentTimeMillis();
-            long last = SharePrenceUtil.getLong(this,JSON_CACHE_LAST_SUCCESS);
-            if((now-last)>time_Out*60*1000 ){
+        } else {
+            int time_Out = SharePrenceUtil.getInt(this, JSON_CACHE_TIME_OUT);
+            long now = System.currentTimeMillis();
+            long last = SharePrenceUtil.getLong(this, JSON_CACHE_LAST_SUCCESS);
+            if ((now - last) > time_Out * 60 * 1000) {
                 httpRequest();
             }
         }
     }
 
-
-    //获取广告数据
-    public void  httpRequest(){
-        Log.i("caiiiac","httpRequest");
-        final  OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(Constant.SPLASH_URL)
-                .build();
-
-        //开启一个异步请求
-        client.newCall(request).enqueue(new Callback() {
-
-            //请求失败
-            @Override public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+    public void httpRequest(){
+        HttpUtil util = HttpUtil.getInstance();
+        util.getDate(Constant.SPLASH_URL, new HttpRespon(String.class) {
+            @Override
+            public void onError(String msg) {
+                Log.i("caiiiac","error msg"+msg);
             }
 
-            //有响应
-            @Override public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    //请求失败
-                }
+            @Override
+            public void onSuccess(String ads) {
+                Log.i("caiiiac","onSuccess"+ads.toString());
 
-                //获取到接口的数据
-                String date = response.body().string();
-
-                Ads ads =  JsonUtil.parseJson(date, Ads.class);
-
-                if(null!= ads ){
-                    //请求成功
-                    Log.i("caiiiac",ads.toString());
-
-                    //http成功后,缓存json
-                    SharePrenceUtil.saveString(SplashActivity.this,JSON_CACHE,date);
-                    //http成功后,缓存超时时间
-                    SharePrenceUtil.saveInt(SplashActivity.this,JSON_CACHE_TIME_OUT,ads.getNext_req());
-                    //http成功后,缓存上次请求成功的时间
-                    SharePrenceUtil.saveLong(SplashActivity.this,JSON_CACHE_LAST_SUCCESS,System.currentTimeMillis());
-
-                    Intent intent = new Intent();
-                    intent.setClass(SplashActivity.this,DownloadImageService.class);
-                    intent.putExtra(DownloadImageService.ADS_DATE ,ads);
-                    startService(intent);
-
-                }else{
-                    //请求失败
-                }
             }
         });
+    }
 
+    //1 使用静态内部类切断访问activcity
+    static class MyHanlder extends Handler {
+
+        //强应用
+        //弱引用 jvm是无法保证他的存活
+        //软应用
+
+        //2  使用弱引用持有对象
+        WeakReference<SplashActivity> activity;
+
+        public MyHanlder(SplashActivity act) {
+            this.activity = new WeakReference<SplashActivity>(act);
+
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            //获取对象,如果对象被回收
+            SplashActivity act = activity.get();
+            //
+            if (act == null) {
+                return;
+            }
+            switch (msg.what) {
+                case 0:
+                    int now = msg.arg1;
+                    if (now <= act.total) {
+                        act.time.setProgess(act.total, now);
+                    } else {
+                        this.removeCallbacks(act.reshRing);
+                        act.gotoMain();
+                    }
+                    Log.i("caiiiac", "handleMessage");
+                    break;
+
+            }
+
+        }
     }
 
 }

@@ -14,11 +14,11 @@ public class BaseApplication extends Application {
         super.onCreate();
 
         x.Ext.init(this);
-        x.Ext.setDefaultHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
+//        x.Ext.setDefaultHostnameVerifier(new HostnameVerifier() {
+//            @Override
+//            public boolean verify(String hostname, SSLSession session) {
+//                return true;
+//            }
+//        });
     }
 }
