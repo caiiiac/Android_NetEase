@@ -253,8 +253,6 @@ public class SplashActivity extends BaseActivity {
                 Ads ads = JsonUtil.parseJson(json, Ads.class);
 
                 if (null != ads) {
-                    //请求成功
-                    Log.i("it520", ads.toString());
 
                     //http成功后,缓存json
                     SharePrenceUtil.saveString(SplashActivity.this, JSON_CACHE, json);
