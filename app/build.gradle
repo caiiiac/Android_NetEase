@@ -30,6 +30,7 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'org.xutils:xutils:3.5.0'
+    implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
     implementation files('libs/okhttp-3.4.1.jar')
     implementation files('libs/okio-1.10.0.jar')
 }

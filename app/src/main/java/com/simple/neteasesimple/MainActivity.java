@@ -18,7 +18,7 @@ import org.xutils.view.annotation.ContentView;
 
 
 @ContentView(R.layout.activity_main)
-public class MainActivity extends BaseActivity implements NewsFragment.OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +67,4 @@ public class MainActivity extends BaseActivity implements NewsFragment.OnFragmen
         return t_Viwe;
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 }
