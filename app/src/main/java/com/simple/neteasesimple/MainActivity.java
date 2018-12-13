@@ -46,8 +46,9 @@ public class MainActivity extends BaseActivity {
                 EmptyFragment.class
         };
 
-        //绑定fragment
+        // 绑定fragment
         tabHost.setup(this, getSupportFragmentManager(), R.id.content);
+
         for (int i = 0; i < titles.length; i++) {
             TabHost.TabSpec tmp = tabHost.newTabSpec("" + i);
             tmp.setIndicator(getEveryView(this, titles, icons, i));
