@@ -21,12 +21,12 @@ public class NewAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        return null;
+        return mFragments.get(i).getFragment();
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return mFragments.size();
     }
 
     @Nullable

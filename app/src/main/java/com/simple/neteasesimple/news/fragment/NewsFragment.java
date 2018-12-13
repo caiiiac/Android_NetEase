@@ -15,6 +15,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.adapter.NewAdapter;
 import com.simple.neteasesimple.news.bean.FragmentInfo;
+import com.simple.neteasesimple.news.news_inner.HotFragment;
 
 import java.util.ArrayList;
 
@@ -47,9 +48,10 @@ public class NewsFragment extends Fragment {
         for (int i = 0; i < titles.length; i++) {
             FragmentInfo info;
             if (i == 0) {
-//                info = new FragmentInfo(new )
+                info = new FragmentInfo(new HotFragment(), titles[i]);
+            } else {
+                info = new FragmentInfo(new EmptyFragment(), titles[i]);
             }
-            info = new FragmentInfo(new EmptyFragment(), titles[i]);
             pages.add(info);
         }
 

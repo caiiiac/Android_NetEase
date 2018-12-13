@@ -3,20 +3,20 @@ package com.simple.neteasesimple.news.bean;
 import java.util.List;
 
 public class Hot {
-    List<HotDetail> hotDetails;
-
-    public List<HotDetail> getHotDetails() {
-        return hotDetails;
-    }
-
-    public void setHotDetails(List<HotDetail> hotDetails) {
-        this.hotDetails = hotDetails;
-    }
+    List<HotDetail> T1348647909107;
 
     @Override
     public String toString() {
         return "Hot{" +
-                "hotDetails=" + hotDetails +
+                "T1348647909107=" + T1348647909107 +
                 '}';
+    }
+
+    public List<HotDetail> getT1348647909107() {
+        return T1348647909107;
+    }
+
+    public void setT1348647909107(List<HotDetail> t1348647909107) {
+        T1348647909107 = t1348647909107;
     }
 }
