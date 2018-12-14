@@ -37,7 +37,7 @@ public class EmptyFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         GlideApp.with(this)
-                .load("http://imgtianqi.eastday.com/res/upload/ue/image/20181213/1544668605327605.jpeg")
+                .load("http://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=f3fcb65bb2119313c743f8b65d036bea/c995d143ad4bd113d34fcfab5aafa40f4afb05ac.jpg")
                 .into(imageView);
     }
 }

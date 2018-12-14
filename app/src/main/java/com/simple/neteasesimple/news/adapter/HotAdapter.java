@@ -1,6 +1,7 @@
 package com.simple.neteasesimple.news.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,9 +79,13 @@ public class HotAdapter extends BaseAdapter {
             hoder.special.setVisibility(View.GONE);
         }
 
-//        GlideApp.with(view)
-//                .load(detail.getImg())
-//                .into(hoder.icon);
+        if (detail.getImg() != null) {
+            GlideApp.with(view)
+                    .load(detail.getImg())
+                    .into(hoder.icon);
+            Log.v("caiiiac", detail.getImg());
+        }
+
     }
 
     class ViewHoder {
