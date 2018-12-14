@@ -7,12 +7,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.adapter.HotAdapter;
@@ -20,6 +23,7 @@ import com.simple.neteasesimple.news.bean.Banner;
 import com.simple.neteasesimple.news.bean.FragmentInfo;
 import com.simple.neteasesimple.news.bean.Hot;
 import com.simple.neteasesimple.news.bean.HotDetail;
+import com.simple.neteasesimple.news.fragment.BannerAdapter;
 import com.simple.neteasesimple.until.Constant;
 import com.simple.neteasesimple.until.HttpRespon;
 import com.simple.neteasesimple.until.HttpUtil;
@@ -29,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HotFragment extends Fragment {
+public class HotFragment extends Fragment implements ViewPager.OnPageChangeListener {
 
     private ListView mListView;
     private ArrayList<Banner> mBanners;
@@ -44,7 +48,10 @@ public class HotFragment extends Fragment {
     // 刷新数据成功
     private final static int INIT_SUCCESS = 0;
 
-
+    ViewPager viewPager;
+    BannerAdapter bannerAdapter;
+    TextView bannerTitle;
+    LinearLayout dots;
 
 
     @Override
@@ -71,6 +78,7 @@ public class HotFragment extends Fragment {
         inflater = LayoutInflater.from(getActivity());
 
 
+        initHead();
         // 请求
         request();
 
@@ -80,13 +88,59 @@ public class HotFragment extends Fragment {
         mListView.setAdapter(mAdapter);
     }
 
+    public void initHead() {
+        View head = inflater.inflate(R.layout.include_banner, null);
+        //将轮播图控件加入listview
+        mListView.addHeaderView(head);
+        viewPager = (ViewPager) head.findViewById(R.id.viewpager);
+        viewPager.addOnPageChangeListener(this);
+        bannerTitle = (TextView) head.findViewById(R.id.title);
+        dots = (LinearLayout)head.findViewById(R.id.dots);
+    }
+
     public void initBanner() {
 
         if (mBanners != null && mBanners.size() > 0) {
             for (int i = 0; i < mBanners.size(); i++) {
-//                View view = inflater.inflate(R.layout.)
+                View view = inflater.inflate(R.layout.item_banner, null);
+                views.add(view);
+
+                ImageView dot = new ImageView(getActivity());
+                dot.setImageResource(R.drawable.gray_dot);
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                p.setMargins(0, 0,10,0);
+                dots.addView(dot, p);
+                dot_imgs.add(dot);
+            }
+
+            bannerAdapter = new BannerAdapter(this, views, mBanners);
+            viewPager.setAdapter(bannerAdapter);
+            int half = Integer.MAX_VALUE/2 - (Integer.MAX_VALUE/2)%mBanners.size();
+            viewPager.setCurrentItem(half);
+
+            // 设置默认
+            setImageDot(0);
+            setBannerTitle(0);
+        }
+    }
+    public void setImageDot(int index){
+        int size = dot_imgs.size();
+        int realPosition = index%size;
+        for(int i = 0;i<size;i++){
+            ImageView dot = dot_imgs.get(i);
+            if(i== realPosition){
+                dot.setImageResource(R.drawable.white_dot);
+            }else{
+                dot.setImageResource(R.drawable.gray_dot);
             }
         }
+    }
+
+    public void setBannerTitle(int index){
+        int size = dot_imgs.size();
+        int realPosition = index%size;
+        //显示默认数据
+        bannerTitle.setText(mBanners.get(realPosition).getTitle());
     }
 
     public void request() {
@@ -119,6 +173,23 @@ public class HotFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+
+        setImageDot(i);
+        setBannerTitle(i);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
+    }
+
 
     static class MyHandler extends Handler {
         WeakReference<HotFragment> weak_fragment;
@@ -133,7 +204,7 @@ public class HotFragment extends Fragment {
                 switch (msg.what) {
                     case INIT_SUCCESS:
                         hot.initData();
-//                        hot.initBanner();
+                        hot.initBanner();
                         break;
                 }
             }

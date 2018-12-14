@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.bean.HotDetail;
+import com.simple.neteasesimple.until.GlideApp;
 
 
 import java.util.ArrayList;
@@ -58,12 +59,12 @@ public class HotAdapter extends BaseAdapter {
         }
 
         // 设置内容
-        setupContent(hoder, mHotDetails.get(position));
+        setupContent(convertView, hoder, mHotDetails.get(position));
 
         return convertView;
     }
 
-    public void setupContent(ViewHoder hoder, HotDetail detail) {
+    public void setupContent(View view, ViewHoder hoder, HotDetail detail) {
 
         hoder.title.setText(detail.getTitle());
         hoder.source.setText(detail.getSource());
@@ -77,6 +78,9 @@ public class HotAdapter extends BaseAdapter {
             hoder.special.setVisibility(View.GONE);
         }
 
+//        GlideApp.with(view)
+//                .load(detail.getImg())
+//                .into(hoder.icon);
     }
 
     class ViewHoder {

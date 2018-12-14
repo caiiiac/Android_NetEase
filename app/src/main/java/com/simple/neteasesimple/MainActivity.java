@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.simple.neteasesimple.news.fragment.EmptyFragment;
 import com.simple.neteasesimple.news.fragment.NewsFragment;
 import com.simple.neteasesimple.until.BaseActivity;
+import com.simple.neteasesimple.until.PermisionUtil;
 
 import org.xutils.view.annotation.ContentView;
 
@@ -23,7 +24,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         FragmentTabHost tabHost = (FragmentTabHost) findViewById(R.id.tab_Host);
 
