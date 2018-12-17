@@ -1,4 +1,4 @@
-package com.simple.neteasesimple.news.fragment;
+package com.simple.neteasesimple.news.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
