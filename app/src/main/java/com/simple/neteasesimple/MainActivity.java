@@ -1,25 +1,26 @@
 package com.simple.neteasesimple;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.simple.neteasesimple.news.fragment.EmptyFragment;
 import com.simple.neteasesimple.news.fragment.NewsFragment;
 import com.simple.neteasesimple.until.BaseActivity;
-import com.simple.neteasesimple.until.PermisionUtil;
 
 import org.xutils.view.annotation.ContentView;
 
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends BaseActivity {
+    long lastBacktime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,14 @@ public class MainActivity extends BaseActivity {
             tmp.setIndicator(getEveryView(this, titles, icons, i));
             tabHost.addTab(tmp, classes[i], null);
         }
+
+        // 监听tab的切换
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                Log.i("caiiiac", "tab ==" + tabId);
+            }
+        });
     }
 
     public View getEveryView(Context context, String[] titles, int[] icons, int index) {
@@ -68,4 +77,14 @@ public class MainActivity extends BaseActivity {
         return t_Viwe;
     }
 
+    @Override
+    public void onBackPressed() {
+        long now = System.currentTimeMillis();
+        if (now - lastBacktime < 1000) {
+            finish();
+        } else {
+            Toast.makeText(this, "再次点击退出应用", Toast.LENGTH_SHORT).show();
+        }
+        lastBacktime = now;
+    }
 }

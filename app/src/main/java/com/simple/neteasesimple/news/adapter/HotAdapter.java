@@ -83,7 +83,6 @@ public class HotAdapter extends BaseAdapter {
             GlideApp.with(view)
                     .load(detail.getImg())
                     .into(hoder.icon);
-            Log.v("caiiiac", detail.getImg());
         }
 
     }

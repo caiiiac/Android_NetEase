@@ -50,9 +50,9 @@ public class BannerAdapter extends PagerAdapter {
         ImageView imageView = tmp.findViewById(R.id.img);
         Banner banner = banners.get(realPosition);
 
-//        GlideApp.with(fragment)
-//                .load(banner.getUrl())
-//                .into(imageView);
+        GlideApp.with(fragment)
+                .load(banner.getUrl())
+                .into(imageView);
 
         container.addView(tmp);
         return tmp;
