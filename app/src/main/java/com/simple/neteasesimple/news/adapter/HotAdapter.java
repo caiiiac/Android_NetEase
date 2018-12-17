@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.bean.HotDetail;
-import com.simple.neteasesimple.until.GlideApp;
+
 
 
 import java.util.ArrayList;
@@ -79,16 +79,15 @@ public class HotAdapter extends BaseAdapter {
             hoder.special.setVisibility(View.GONE);
         }
 
+        String imgUrl = detail.getImg();
         if (detail.getImg() != null) {
-            GlideApp.with(view)
-                    .load(detail.getImg())
-                    .into(hoder.icon);
+            hoder.icon.setImageURI(imgUrl);
         }
 
     }
 
     class ViewHoder {
-        ImageView icon;
+        SimpleDraweeView icon;
         TextView title;
         TextView source;
         TextView reply_count;

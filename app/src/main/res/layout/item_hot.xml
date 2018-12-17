@@ -2,17 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/img"
         android:layout_width="100dp"
         android:layout_height="65dp"
         android:layout_alignParentLeft="true"
         android:padding="5dp"
-        android:scaleType="fitXY" />
+        android:scaleType="fitXY"
+        fresco:placeholderImage="@drawable/base_common_default_icon_small"/>
 
     <TextView
         android:id="@+id/title"

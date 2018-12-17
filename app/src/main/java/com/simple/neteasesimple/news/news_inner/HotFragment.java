@@ -23,7 +23,7 @@ import com.simple.neteasesimple.news.bean.Banner;
 import com.simple.neteasesimple.news.bean.FragmentInfo;
 import com.simple.neteasesimple.news.bean.Hot;
 import com.simple.neteasesimple.news.bean.HotDetail;
-import com.simple.neteasesimple.news.fragment.BannerAdapter;
+import com.simple.neteasesimple.news.adapter.BannerAdapter;
 import com.simple.neteasesimple.until.Constant;
 import com.simple.neteasesimple.until.HttpRespon;
 import com.simple.neteasesimple.until.HttpUtil;

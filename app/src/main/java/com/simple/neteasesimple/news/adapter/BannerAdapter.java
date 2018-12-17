@@ -7,11 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.bean.Banner;
 import com.simple.neteasesimple.news.bean.Hot;
 import com.simple.neteasesimple.news.news_inner.HotFragment;
-import com.simple.neteasesimple.until.GlideApp;
+
 
 import java.util.ArrayList;
 
@@ -47,12 +48,10 @@ public class BannerAdapter extends PagerAdapter {
         int realPosition = position%size;
 
         View tmp = views.get(realPosition);
-        ImageView imageView = tmp.findViewById(R.id.img);
+        SimpleDraweeView imageView = tmp.findViewById(R.id.img);
         Banner banner = banners.get(realPosition);
 
-        GlideApp.with(fragment)
-                .load(banner.getUrl())
-                .into(imageView);
+        imageView.setImageURI("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1545045516383&di=433465e23c1159127e2dc3c9bbb89dbd&imgtype=0&src=http%3A%2F%2Fwww.qiaoxun.org%2Fupload_files%2Farticle%2F357%2F12484_1ommw__831cc5feddef475_size24_w926_h435.jpg");
 
         container.addView(tmp);
         return tmp;
