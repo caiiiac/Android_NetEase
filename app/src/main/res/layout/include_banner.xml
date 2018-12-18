@@ -18,7 +18,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/viewpager">
+            android:layout_alignBottom="@id/viewpager"
+            android:background="@drawable/title_back" >
 
             <LinearLayout
                 android:id="@+id/dots"
@@ -37,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/dots"
                 android:singleLine="true"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="13sp"/>
         </RelativeLayout>
     </RelativeLayout>

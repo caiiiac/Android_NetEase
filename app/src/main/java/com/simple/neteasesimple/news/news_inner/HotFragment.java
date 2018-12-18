@@ -118,6 +118,9 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
             return;
         }
         isHttpRequesting = true;
+        if (isInit) {
+            count = 0;
+        }
         HttpUtil util = HttpUtil.getInstance();
         calIndex();
         String url = Constant.getHotUrl(startIndex, endIndex);
@@ -138,11 +141,14 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                         //取出第0位包含轮播图的数据
                         HotDetail tmp_baner = details.get(0);
                         List<Banner> banners = tmp_baner.getAds();
-                        mBanners.addAll(banners);
-                        //获取轮播图片成功
+                        if (banners != null) {
+                            mBanners.addAll(banners);
+                            //获取轮播图片成功
 
-                        //删除轮播图片数据
-                        details.remove(0);
+                            //删除轮播图片数据
+                            details.remove(0);
+                        }
+
                         mHotDetails.addAll(details);
                         //列表数据加载完成
 
