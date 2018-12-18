@@ -1,7 +1,6 @@
 package com.simple.neteasesimple.news.news_inner;
 
-import android.content.Context;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.adapter.HotAdapter;
 import com.simple.neteasesimple.news.bean.Banner;
-import com.simple.neteasesimple.news.bean.FragmentInfo;
 import com.simple.neteasesimple.news.bean.Hot;
 import com.simple.neteasesimple.news.bean.HotDetail;
 import com.simple.neteasesimple.news.adapter.BannerAdapter;
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HotFragment extends Fragment implements ViewPager.OnPageChangeListener {
+public class HotFragment extends Fragment implements ViewPager.OnPageChangeListener, AbsListView.OnScrollListener {
 
     private ListView mListView;
     private ArrayList<Banner> mBanners;
@@ -45,13 +45,25 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
     private HotAdapter mAdapter;
     private LayoutInflater inflater;
 
+    boolean isToend = false;
+    boolean isHttpRequesting = false;
+
     // 刷新数据成功
     private final static int INIT_SUCCESS = 0;
+
+    //加载更多成功
+    private  final static int UPDATE_SUCCESS = 1;
 
     ViewPager viewPager;
     BannerAdapter bannerAdapter;
     TextView bannerTitle;
     LinearLayout dots;
+
+    int startIndex = 0;
+    int endIndex = 0;
+    int pageSize = 20;
+    // 取页面的次数
+    int count = 0;
 
 
     @Override
@@ -67,31 +79,103 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        initCollection();
+
+        initHead();
+        // 请求
+        getDate(true);
+
+    }
+
+    public void initCollection() {
         mBanners = new ArrayList<>();
         mHotDetails = new ArrayList<>();
         views = new ArrayList<>();
         dot_imgs = new ArrayList<>();
 
-
-        mHandler = new MyHandler(this);
-
-        inflater = LayoutInflater.from(getActivity());
-
-
-        initHead();
-        // 请求
-        request();
-
     }
+
+    // 处理listView数据源
     public void initData() {
         mAdapter = new HotAdapter(mHotDetails, getActivity());
         mListView.setAdapter(mAdapter);
     }
 
+    public void update(List<HotDetail> newDate) {
+        if (mAdapter == null) {
+            mHotDetails = new ArrayList<>();
+            mHotDetails.addAll(newDate);
+            mAdapter = new HotAdapter(mHotDetails, getActivity());
+            mListView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addDate(newDate);
+        }
+    }
+
+    //isInit 来标示是否是第一次取数据
+    private void getDate(final boolean isInit) {
+        if(isHttpRequesting){
+            return;
+        }
+        isHttpRequesting = true;
+        HttpUtil util = HttpUtil.getInstance();
+        calIndex();
+        String url = Constant.getHotUrl(startIndex, endIndex);
+        util.getDate(url, new HttpRespon<Hot>(Hot.class) {
+            @Override
+            public void onError(String msg) {
+                isHttpRequesting = false;
+            }
+
+            @Override
+            public void onSuccess(Hot hot) {
+                isHttpRequesting = false;
+                if (null != hot && null != hot.getT1348647909107()) {
+                    count++;
+                    List<HotDetail> details = hot.getT1348647909107();
+                    //取的是第一页的数据->取出轮播图的数据->删除->显示listView
+                    if (isInit) {
+                        //取出第0位包含轮播图的数据
+                        HotDetail tmp_baner = details.get(0);
+                        List<Banner> banners = tmp_baner.getAds();
+                        mBanners.addAll(banners);
+                        //获取轮播图片成功
+
+                        //删除轮播图片数据
+                        details.remove(0);
+                        mHotDetails.addAll(details);
+                        //列表数据加载完成
+
+                        //异步线程无法更改UI
+                        mHandler.sendEmptyMessage(INIT_SUCCESS);
+                    } else {
+                        Message message = mHandler.obtainMessage(UPDATE_SUCCESS);
+                        message.obj = details;
+                        mHandler.sendMessage(message);
+
+                    }
+
+                }
+            }
+        });
+    }
+
     public void initHead() {
+        mHandler = new MyHandler(this);
+
+        inflater = LayoutInflater.from(getActivity());
+
         View head = inflater.inflate(R.layout.include_banner, null);
         //将轮播图控件加入listview
         mListView.addHeaderView(head);
+        // 滑动监听
+        mListView.setOnScrollListener(this);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
         viewPager = (ViewPager) head.findViewById(R.id.viewpager);
         viewPager.addOnPageChangeListener(this);
         bannerTitle = (TextView) head.findViewById(R.id.title);
@@ -123,6 +207,15 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
             setBannerTitle(0);
         }
     }
+
+    public void calIndex() {
+        if (count == 0) {
+            endIndex = startIndex + pageSize;
+        } else {
+            startIndex = endIndex;
+            endIndex = startIndex + pageSize;
+        }
+    }
     public void setImageDot(int index){
         int size = dot_imgs.size();
         int realPosition = index%size;
@@ -143,35 +236,35 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
         bannerTitle.setText(mBanners.get(realPosition).getTitle());
     }
 
-    public void request() {
-        HttpUtil util = HttpUtil.getInstance();
-        util.getDate(Constant.HOT_URL, new HttpRespon<Hot>(Hot.class) {
-            @Override
-            public void onError(String msg) {
-                Log.v("caiiiac", msg);
-            }
-
-            @Override
-            public void onSuccess(Hot hot) {
-
-                if (hot != null && hot.getT1348647909107() != null) {
-                    List<HotDetail> details = hot.getT1348647909107();
-
-                    // 取出轮播图数据
-                    HotDetail tmp_banner = details.get(0);
-                    List<Banner> banners = tmp_banner.getAds();
-                    mBanners.addAll(banners);
-                    details.remove(0);
-
-                    // 列表数据
-                    mHotDetails.addAll(details);
-
-                    // 发送成功信号
-                    mHandler.sendEmptyMessage(INIT_SUCCESS);
-                }
-            }
-        });
-    }
+//    public void request() {
+//        HttpUtil util = HttpUtil.getInstance();
+//        util.getDate(Constant.HOT_URL, new HttpRespon<Hot>(Hot.class) {
+//            @Override
+//            public void onError(String msg) {
+//                Log.v("caiiiac", msg);
+//            }
+//
+//            @Override
+//            public void onSuccess(Hot hot) {
+//
+//                if (hot != null && hot.getT1348647909107() != null) {
+//                    List<HotDetail> details = hot.getT1348647909107();
+//
+//                    // 取出轮播图数据
+//                    HotDetail tmp_banner = details.get(0);
+//                    List<Banner> banners = tmp_banner.getAds();
+//                    mBanners.addAll(banners);
+//                    details.remove(0);
+//
+//                    // 列表数据
+//                    mHotDetails.addAll(details);
+//
+//                    // 发送成功信号
+//                    mHandler.sendEmptyMessage(INIT_SUCCESS);
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void onPageScrolled(int i, float v, int i1) {
@@ -190,6 +283,23 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
 
     }
 
+    // 滑动状态回调
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        if (i == SCROLL_STATE_IDLE && isToend) {
+            getDate(false);
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+        if (absListView.getLastVisiblePosition() == i2 - 1) {
+            isToend = true;
+        } else {
+            isToend = false;
+        }
+    }
+
 
     static class MyHandler extends Handler {
         WeakReference<HotFragment> weak_fragment;
@@ -205,6 +315,10 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                     case INIT_SUCCESS:
                         hot.initData();
                         hot.initBanner();
+                        break;
+                    case UPDATE_SUCCESS:
+                        List<HotDetail> date = (List<HotDetail>) msg.obj;
+                        hot.update(date);
                         break;
                 }
             }

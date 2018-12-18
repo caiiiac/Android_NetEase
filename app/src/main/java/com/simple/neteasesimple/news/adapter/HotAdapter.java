@@ -1,7 +1,6 @@
 package com.simple.neteasesimple.news.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.simple.neteasesimple.news.bean.HotDetail;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HotAdapter extends BaseAdapter {
 
@@ -60,12 +60,12 @@ public class HotAdapter extends BaseAdapter {
         }
 
         // 设置内容
-        setupContent(convertView, hoder, mHotDetails.get(position));
+        setupContent(hoder, mHotDetails.get(position));
 
         return convertView;
     }
 
-    public void setupContent(View view, ViewHoder hoder, HotDetail detail) {
+    public void setupContent(ViewHoder hoder, HotDetail detail) {
 
         hoder.title.setText(detail.getTitle());
         hoder.source.setText(detail.getSource());
@@ -84,6 +84,19 @@ public class HotAdapter extends BaseAdapter {
             hoder.icon.setImageURI(imgUrl.replace("http", "https"));
         }
 
+    }
+
+    public void addDate(List<HotDetail> add) {
+        if(mHotDetails==null){
+            mHotDetails = new ArrayList<>();
+        }
+        mHotDetails.addAll(add);
+        notifyDataSetChanged();
+    }
+
+    public HotDetail getDateByIndex(int index){
+        HotDetail detail = mHotDetails.get(index);
+        return  detail;
     }
 
     class ViewHoder {
