@@ -2,7 +2,6 @@ package com.simple.neteasesimple;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.Toast;
 import com.simple.neteasesimple.news.fragment.EmptyFragment;
 import com.simple.neteasesimple.news.fragment.NewsFragment;
 import com.simple.neteasesimple.until.BaseActivity;
+import com.simple.neteasesimple.until.FragmentTabHost;
 
 import org.xutils.view.annotation.ContentView;
 
