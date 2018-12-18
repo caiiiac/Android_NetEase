@@ -10,6 +10,8 @@ public class HotDetail {
     private String source;
     private int replyCount;
     private String specialID;
+    private String docid;
+
 
     public List<Banner> getAds() {
         return ads;
@@ -57,6 +59,14 @@ public class HotDetail {
 
     public void setSpecialID(String specialID) {
         this.specialID = specialID;
+    }
+
+    public String getDocid() {
+        return docid;
+    }
+
+    public void setDocid(String docid) {
+        this.docid = docid;
     }
 
     @Override

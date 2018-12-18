@@ -1,12 +1,14 @@
 package com.simple.neteasesimple.news.news_inner;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.simple.neteasesimple.R;
+import com.simple.neteasesimple.news.activity.DetailActivity;
 import com.simple.neteasesimple.news.adapter.HotAdapter;
 import com.simple.neteasesimple.news.bean.Banner;
 import com.simple.neteasesimple.news.bean.Hot;
@@ -179,6 +182,18 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                HotDetail detail = mAdapter.getDateByIndex(i - mListView.getHeaderViewsCount());
+
+                Intent intent = new Intent();
+                if (TextUtils.isEmpty(detail.getSpecialID())) {
+                    intent.setClass(getActivity(), DetailActivity.class);
+                    intent.putExtra(DetailActivity.DOCID, detail.getDocid());
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+                } else {
+//                    intent.setClass(getActivity(), DetailActivity.class);
+                }
+
 
             }
         });
