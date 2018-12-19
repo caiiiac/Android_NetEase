@@ -82,6 +82,8 @@ public class HotAdapter extends BaseAdapter {
         String imgUrl = detail.getImg();
         if (detail.getImg() != null) {
             hoder.icon.setImageURI(imgUrl.replace("http", "https"));
+        } else {
+            hoder.icon.setImageResource(R.drawable.base_common_default_icon_small);
         }
 
     }

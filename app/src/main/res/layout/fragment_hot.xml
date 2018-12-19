@@ -6,13 +6,24 @@
     tools:context=".news.news_inner.HotFragment"
     android:orientation="vertical">
 
-
-    <ListView
-        android:id="@+id/listView"
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
+        android:id="@+id/ptr"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </ListView>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <ListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </ListView>
+
+        </FrameLayout>
+
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
 
 </RelativeLayout>

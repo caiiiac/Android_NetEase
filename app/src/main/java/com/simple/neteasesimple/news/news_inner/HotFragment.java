@@ -35,6 +35,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.srain.cube.views.ptr.PtrClassicFrameLayout;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+
 
 public class HotFragment extends Fragment implements ViewPager.OnPageChangeListener, AbsListView.OnScrollListener {
 
@@ -57,10 +61,14 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
     //加载更多成功
     private  final static int UPDATE_SUCCESS = 1;
 
+    // 加载完成
+    private final static int STOP_RESH = 2;
+
     ViewPager viewPager;
     BannerAdapter bannerAdapter;
     TextView bannerTitle;
     LinearLayout dots;
+    PtrClassicFrameLayout ptr;
 
     int startIndex = 0;
     int endIndex = 0;
@@ -68,12 +76,24 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
     // 取页面的次数
     int count = 0;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hot, container, false);
         mListView = view.findViewById(R.id.listView);
+
+        ptr = view.findViewById(R.id.ptr);
+        ptr.setPtrHandler(new PtrDefaultHandler() {
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                getDate(true);
+            }
+
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return super.checkCanDoRefresh(frame, mListView, header);
+            }
+        });
         return view;
     }
 
@@ -110,6 +130,7 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
             mHotDetails.addAll(newDate);
             mAdapter = new HotAdapter(mHotDetails, getActivity());
             mListView.setAdapter(mAdapter);
+
         } else {
             mAdapter.addDate(newDate);
         }
@@ -123,6 +144,10 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
         isHttpRequesting = true;
         if (isInit) {
             count = 0;
+            dots.removeAllViews();
+            dot_imgs.clear();
+            views.clear();
+            mHotDetails.clear();
         }
         HttpUtil util = HttpUtil.getInstance();
         calIndex();
@@ -131,11 +156,13 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
             @Override
             public void onError(String msg) {
                 isHttpRequesting = false;
+                mHandler.sendEmptyMessage(STOP_RESH);
             }
 
             @Override
             public void onSuccess(Hot hot) {
                 isHttpRequesting = false;
+                mHandler.sendEmptyMessage(STOP_RESH);
                 if (null != hot && null != hot.getT1348647909107()) {
                     count++;
                     List<HotDetail> details = hot.getT1348647909107();
@@ -145,6 +172,7 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                         HotDetail tmp_baner = details.get(0);
                         List<Banner> banners = tmp_baner.getAds();
                         if (banners != null) {
+                            mBanners.clear();
                             mBanners.addAll(banners);
                             //获取轮播图片成功
 
@@ -203,6 +231,10 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
         dots = (LinearLayout)head.findViewById(R.id.dots);
     }
 
+    public void stopResh() {
+        ptr.refreshComplete();
+    }
+
     public void initBanner() {
 
         if (mBanners != null && mBanners.size() > 0) {
@@ -231,7 +263,9 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
 
     public void calIndex() {
         if (count == 0) {
+            startIndex = 0;
             endIndex = startIndex + pageSize;
+
         } else {
             startIndex = endIndex;
             endIndex = startIndex + pageSize;
@@ -340,6 +374,9 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                     case UPDATE_SUCCESS:
                         List<HotDetail> date = (List<HotDetail>) msg.obj;
                         hot.update(date);
+                        break;
+                    case STOP_RESH:
+                        hot.stopResh();
                         break;
                 }
             }
