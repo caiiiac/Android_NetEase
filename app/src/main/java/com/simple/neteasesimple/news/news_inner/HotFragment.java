@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.simple.neteasesimple.R;
@@ -81,6 +81,10 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hot, container, false);
         mListView = view.findViewById(R.id.listView);
+
+        // 无数据显示
+        RelativeLayout loading = view.findViewById(R.id.loading);
+        mListView.setEmptyView(loading);
 
         ptr = view.findViewById(R.id.ptr);
         ptr.setPtrHandler(new PtrDefaultHandler() {
