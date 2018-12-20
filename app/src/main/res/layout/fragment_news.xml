@@ -69,7 +69,7 @@
             <FrameLayout
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="40dp" >
             </FrameLayout>
 
             <RelativeLayout
@@ -132,13 +132,43 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <com.simple.neteasesimple.until.NoScrollGridView
+                        android:id="@+id/show"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:horizontalSpacing="10dp"
+                        android:verticalSpacing="10dp"
+                        android:layout_marginTop="10dp"
+                        android:listSelector="@android:color/transparent"
+                        android:numColumns="4">
 
+                    </com.simple.neteasesimple.until.NoScrollGridView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/darker_gray"
+                        android:textColor="@android:color/black"
+                        android:text="点击添加更多栏目"
+                        android:padding="5dp"
+                        android:layout_marginTop="10dp"/>
+
+                    <com.simple.neteasesimple.until.NoScrollGridView
+                        android:id="@+id/not_show"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:horizontalSpacing="10dp"
+                        android:verticalSpacing="10dp"
+                        android:layout_marginTop="10dp"
+                        android:numColumns="4"
+                        android:listSelector="@android:color/transparent">
+
+                    </com.simple.neteasesimple.until.NoScrollGridView>
                 </LinearLayout>
             </ScrollView>
 
         </FrameLayout>
 
     </FrameLayout>
-
 
 </LinearLayout>

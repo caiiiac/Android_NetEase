@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.simple.neteasesimple.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ShowAdapter extends BaseAdapter {
 
@@ -20,6 +21,17 @@ public class ShowAdapter extends BaseAdapter {
     public ShowAdapter(ArrayList<String> titles, Context mContext) {
         this.titles = titles;
         this.mContext = mContext;
+    }
+
+    public ShowAdapter(String[] title , Context context){
+        this.titles = new ArrayList<>();
+        titles.addAll(Arrays.asList(title));
+        mContext = context;
+    }
+
+    public  ShowAdapter(Context context){
+        this.titles = new ArrayList<>();
+        mContext = context;
     }
 
     @Override
