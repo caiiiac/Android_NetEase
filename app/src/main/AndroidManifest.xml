@@ -30,7 +30,8 @@
         <activity android:name=".splash.activity.WebViewActivity" />
         <activity android:name=".news.activity.DetailActivity" />
         <activity android:name=".news.activity.SpecialActivity" />
-        <activity android:name=".news.activity.DetailImageActivity"></activity>
+        <activity android:name=".news.activity.DetailImageActivity" />
+        <activity android:name=".news.activity.FeedBackActivity"></activity>
     </application>
 
 </manifest>

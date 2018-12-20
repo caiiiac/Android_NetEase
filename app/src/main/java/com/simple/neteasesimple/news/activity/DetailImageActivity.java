@@ -14,7 +14,7 @@ import org.xutils.view.annotation.ContentView;
 
 import java.util.ArrayList;
 
-
+@ContentView(R.layout.activity_detail_image)
 public class DetailImageActivity extends BaseActivity {
 
     ViewPager viewPager;
@@ -23,7 +23,6 @@ public class DetailImageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_image);
 
         views = new ArrayList<>();
 

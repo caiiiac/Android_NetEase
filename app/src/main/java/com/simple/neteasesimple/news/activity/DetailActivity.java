@@ -101,7 +101,10 @@ public class DetailActivity extends BaseActivity {
         replayCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent();
+                intent.setClass(DetailActivity.this, FeedBackActivity.class);
+                intent.putExtra(DOCID, doc_Id);
+                startActivity(intent);
             }
         });
 
