@@ -8,6 +8,10 @@ public class Constant {
 
     public static final String DETAIL_URL="http://c.m.163.com/nc/article/%D/full.html";
 
+    public static final String FeedBackUrl="http://comment.api.163.com/api/json/post/list/new/hot/news3_bbs/%D/0/10/10/2/2";
+
+    public static final String Specialurl="http://c.m.163.com/nc/special/%S.html";
+
     //缓存文件.代表隐藏文件
     public static final String CACHE ="xmgCache";
 
@@ -21,6 +25,18 @@ public class Constant {
     public static String getDetailUrl(String docid){
         String result;
         result =  DETAIL_URL.replace("%D",docid);
+        return  result;
+    }
+
+    public static  String getFeedBackUrl(String docid){
+        String result;
+        result =  FeedBackUrl.replace("%D",docid);
+        return  result;
+    }
+
+    public static String getSpecial(String specialID){
+        String result;
+        result =  Specialurl.replace("%S",specialID);
         return  result;
     }
 }

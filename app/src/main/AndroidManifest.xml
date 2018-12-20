@@ -28,7 +28,9 @@
 
         <activity android:name=".MainActivity" />
         <activity android:name=".splash.activity.WebViewActivity" />
-        <activity android:name=".news.activity.DetailActivity"></activity>
+        <activity android:name=".news.activity.DetailActivity" />
+        <activity android:name=".news.activity.SpecialActivity" />
+        <activity android:name=".news.activity.DetailImageActivity"></activity>
     </application>
 
 </manifest>

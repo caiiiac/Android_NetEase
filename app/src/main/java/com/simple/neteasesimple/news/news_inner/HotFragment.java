@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.simple.neteasesimple.R;
 import com.simple.neteasesimple.news.activity.DetailActivity;
+import com.simple.neteasesimple.news.activity.SpecialActivity;
 import com.simple.neteasesimple.news.adapter.HotAdapter;
 import com.simple.neteasesimple.news.bean.Banner;
 import com.simple.neteasesimple.news.bean.Hot;
@@ -220,12 +221,13 @@ public class HotFragment extends Fragment implements ViewPager.OnPageChangeListe
                 if (TextUtils.isEmpty(detail.getSpecialID())) {
                     intent.setClass(getActivity(), DetailActivity.class);
                     intent.putExtra(DetailActivity.DOCID, detail.getDocid());
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
-                } else {
-//                    intent.setClass(getActivity(), DetailActivity.class);
-                }
 
+                } else {
+                    intent.setClass(getActivity(), SpecialActivity.class);
+                    intent.putExtra(SpecialActivity.SPECIAL_ID,detail.getSpecialID());
+                }
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
 
             }
         });
