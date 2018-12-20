@@ -24,7 +24,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             app:placeholderImage="@drawable/biz_tie_user_avater_default"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            app:roundAsCircle="true"/>
 
         <ImageView
             android:id="@+id/vip_f"
