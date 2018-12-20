@@ -1,6 +1,8 @@
 package com.simple.neteasesimple.news.bean;
 
-public class DetailWebImage {
+import java.io.Serializable;
+
+public class DetailWebImage implements Serializable {
 
     private String alt;
     private String pixel;
@@ -48,4 +50,5 @@ public class DetailWebImage {
                 ", src='" + src + '\'' +
                 '}';
     }
+
 }

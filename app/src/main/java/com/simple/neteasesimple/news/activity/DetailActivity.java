@@ -1,10 +1,11 @@
 package com.simple.neteasesimple.news.activity;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -104,14 +105,15 @@ public class DetailActivity extends BaseActivity {
             }
         });
 
-        mWebView.addJavascriptInterface(this, "detail");
+        mWebView.addJavascriptInterface(this, "demo");
 
         // Handler
         mHandler = new MyHandler(this);
-        doc_Id = getIntent().getStringExtra(DOCID);
+
     }
 
     public void request() {
+        doc_Id = getIntent().getStringExtra(DOCID);
         HttpUtil util = HttpUtil.getInstance();
         String url = Constant.getDetailUrl(doc_Id);
 
@@ -153,7 +155,6 @@ public class DetailActivity extends BaseActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         });
     }
@@ -162,6 +163,15 @@ public class DetailActivity extends BaseActivity {
 
         mWebView.loadDataWithBaseURL(null, body, "text/html", "utf-8", null);
         replayCountTextView.setText(String.valueOf(replayCount));
+    }
+
+    @JavascriptInterface
+    public void javaShow() {
+        Log.i("caiiiac", "javaShow"+images.size());
+        Intent intent = new Intent();
+        intent.setClass(this, DetailImageActivity.class);
+        intent.putExtra("image", images);
+        startActivity(intent);
     }
 
 
