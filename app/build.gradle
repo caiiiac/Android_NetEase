@@ -16,12 +16,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    repositories {
+        mavenCentral()
+        google()
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

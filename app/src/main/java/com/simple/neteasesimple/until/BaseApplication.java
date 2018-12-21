@@ -9,6 +9,8 @@ import org.xutils.x;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class BaseApplication extends Application {
 
     @Override
@@ -19,6 +21,9 @@ public class BaseApplication extends Application {
         x.Ext.init(this);
         // 图片加载库
         Fresco.initialize(this);
+
+        JPushInterface.init(this);
+        JPushInterface.setDebugMode(true);
 //        x.Ext.setDefaultHostnameVerifier(new HostnameVerifier() {
 //            @Override
 //            public boolean verify(String hostname, SSLSession session) {
